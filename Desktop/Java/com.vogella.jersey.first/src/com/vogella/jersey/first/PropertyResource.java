@@ -16,7 +16,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
  
-@Path("/properties")/*cust’r service’s relative root URI*/  
+@Path("/properties")/*custâ€™r serviceâ€™s relative root URI*/  
 
 public class PropertyResource {
 	
@@ -36,23 +36,19 @@ public class PropertyResource {
 	}
 	
 	@GET   
-	@Path("min={min}&&max={max}")   
+	@Path("{id}")   
 	@Produces("application/xml")   
-	public StreamingOutput getProperty(@PathParam("min") int min,@PathParam("max") int max) {
-		Set<Integer> key = propertyDB.keySet();
+	public StreamingOutput getProperty(@PathParam("id") int id) {      
+		final Property prob = propertyDB.get(id);      
+		if (prob == null) {         
+			throw new WebApplicationException(Response.Status.NOT_FOUND);      
+		}      
 		return new StreamingOutput() {         
-			public void write(OutputStream outputStream) throws IOException, WebApplicationException {   			
-				for(Integer i: key){
-					Property property1 = propertyDB.get(i);
-					int price = Integer.parseInt(property1.getPrice());
-					if(price >= min && price <= max){
-						outputProperty(outputStream, property1); 				
-					}     
-				}
+			public void write(OutputStream outputStream) throws IOException, WebApplicationException {            
+				outputProperty(outputStream, prob);         
 			}      
-		};    
-  
-	}  
+		};
+	}
 	
 
 	

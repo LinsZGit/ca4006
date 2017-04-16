@@ -3,10 +3,12 @@ package com.vogella.jersey.first;
 public class Property {
 	private int id;   
 	
-	
+	private String type;
 	private String district;   
 	private String bedroom;   
-	private String price;   
+	private String price;
+	private String startTime;
+	private String endTime;
  
 	public int getId() { 
 		return id; 
@@ -16,6 +18,28 @@ public class Property {
 		this.id = id;   
 	} 
  
+	public String getStart() {   
+		return startTime; 
+	}   
+	
+	public void setStart(String startTime) { 
+		this.startTime = startTime; 
+	} 
+	public String getEnd() {   
+		return endTime; 
+	}   
+	
+	public void setEnd(String endTime) { 
+		this.endTime = endTime; 
+	} 
+	public String getType() {   
+		return type; 
+	}   
+	
+	public void setType(String type) { 
+		this.type = type; 
+	} 
+	
 	public String getDistrict() {   
 		return district; 
 	}   

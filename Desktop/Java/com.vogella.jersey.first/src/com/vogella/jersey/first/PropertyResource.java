@@ -11,7 +11,8 @@ import javax.ws.rs.core.StreamingOutput;
 import javax.xml.parsers.DocumentBuilder; 
 import javax.xml.parsers.DocumentBuilderFactory; 
 import java.io.*; 
-import java.net.URI; 
+import java.net.URI;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,8 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Path("/propertys")/*cust’r service’s relative root URI*/  
 
 public class PropertysResource {
-	@SuppressWarnings("deprecation")
-	private Date today = new Date(Calendar.getInstance().get(Calendar.YEAR),Calendar.getInstance().get(Calendar.MONTH),Calendar.getInstance().get(Calendar.DATE));
+	private LocalDate today = LocalDate.now();
 	private Map<Integer, Property> propertyDB = new  ConcurrentHashMap<Integer, Property>();   
 	private AtomicInteger idCounter = new AtomicInteger();    
 	
@@ -62,14 +62,10 @@ public class PropertysResource {
 		for(Integer i: id){
 			Property prob = propertyDB.get(i);
 			int price = Integer.parseInt(prob.getPrice());
-			String[] start = (prob.getStart()).split("/");
-			@SuppressWarnings("deprecation")
-			Date startDate = new Date(Integer.parseInt(start[2]),Integer.parseInt(start[1]),Integer.parseInt(start[0]));
-			String[] end = (prob.getEnd()).split("/");
-			@SuppressWarnings("deprecation")
-			Date endDate = new Date(Integer.parseInt(end[2]),Integer.parseInt(end[1]),Integer.parseInt(end[0]));
+			LocalDate start = prob.getStart();
+			LocalDate end = prob.getEnd();
 			if(price >= min && price <= max){
-				if((startDate.before(today) || startDate.equals(today))&& (endDate.after(today)|| endDate.equals(today))){
+				if((start.isBefore(today)||start.equals(today))&&(end.isAfter(today)|| end.equals(today))){
 					result.add(prob);
 				}
 			}
@@ -109,8 +105,8 @@ public class PropertysResource {
 		property1.setType(update.getType()); 
 		property1.setDistrict(update.getDistrict());      
 		property1.setPrice(update.getPrice());    
-		property1.setStart(update.getStart());   
-		property1.setEnd(update.getEnd());   
+		property1.setStart(update.getStart().toString());   
+		property1.setEnd(update.getEnd().toString());   
 	}
 	
 	

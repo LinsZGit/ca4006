@@ -1,5 +1,8 @@
 package com.vogella.jersey.first;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 public class Property {
 	private int id;   
 	
@@ -9,7 +12,7 @@ public class Property {
 	private String price;
 	private String startTime;
 	private String endTime;
- 
+	private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	public int getId() { 
 		return id; 
 	}   
@@ -18,15 +21,18 @@ public class Property {
 		this.id = id;   
 	} 
  
-	public String getStart() {   
-		return startTime; 
+	public LocalDate getStart() {  
+		
+		LocalDate start = LocalDate.parse(startTime,formatter);
+		return start; 
 	}   
 	
 	public void setStart(String startTime) { 
 		this.startTime = startTime; 
 	} 
-	public String getEnd() {   
-		return endTime; 
+	public LocalDate getEnd() {   
+		LocalDate end = LocalDate.parse(endTime,formatter);
+		return end; 
 	}   
 	
 	public void setEnd(String endTime) { 

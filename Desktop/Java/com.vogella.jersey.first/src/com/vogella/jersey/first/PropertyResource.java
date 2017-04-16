@@ -19,7 +19,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Path("/propertys")/*cust’r service’s relative root URI*/  
 
 public class PropertysResource {
-	private Date today = new Date();
+	@SuppressWarnings("deprecation")
+	private Date today = new Date(Calendar.getInstance().get(Calendar.YEAR),Calendar.getInstance().get(Calendar.MONTH),Calendar.getInstance().get(Calendar.DATE));
 	private Map<Integer, Property> propertyDB = new  ConcurrentHashMap<Integer, Property>();   
 	private AtomicInteger idCounter = new AtomicInteger();    
 	
@@ -62,11 +63,15 @@ public class PropertysResource {
 			Property prob = propertyDB.get(i);
 			int price = Integer.parseInt(prob.getPrice());
 			String[] start = (prob.getStart()).split("/");
+			@SuppressWarnings("deprecation")
 			Date startDate = new Date(Integer.parseInt(start[2]),Integer.parseInt(start[1]),Integer.parseInt(start[0]));
 			String[] end = (prob.getEnd()).split("/");
+			@SuppressWarnings("deprecation")
 			Date endDate = new Date(Integer.parseInt(end[2]),Integer.parseInt(end[1]),Integer.parseInt(end[0]));
 			if(price >= min && price <= max){
-				result.add(prob);
+				if((startDate.before(today) || startDate.equals(today))&& (endDate.after(today)|| endDate.equals(today))){
+					result.add(prob);
+				}
 			}
 			
 		}
@@ -103,7 +108,9 @@ public class PropertysResource {
 		if (property1 == null) throw new WebApplicationException(Response.Status.NOT_FOUND); 
 		property1.setType(update.getType()); 
 		property1.setDistrict(update.getDistrict());      
-		property1.setPrice(update.getPrice());      
+		property1.setPrice(update.getPrice());    
+		property1.setStart(update.getStart());   
+		property1.setEnd(update.getEnd());   
 	}
 	
 	

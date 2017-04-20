@@ -1,4 +1,5 @@
 package com.dcu.property.system;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -17,7 +18,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@Path("/propertys")/*cust�r service�s relative root URI*/
+@Path("/propertys")/*customer services relative root URI*/
 
 public class PropertysResource {
 	private LocalDate today = LocalDate.now();
@@ -42,6 +43,7 @@ public class PropertysResource {
 	public StreamingOutput getProperty(@PathParam("id") int id) {
 		final Property prob = propertyDB.get(id);
 		if (prob == null) {
+			System.out.println("No matching property found");
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
 		return new StreamingOutput() {
@@ -55,6 +57,7 @@ public class PropertysResource {
 	@Produces("application/xml")
 	public StreamingOutput findProperty(@PathParam("min") int min,@PathParam("max") int max){
 		if (propertyDB.isEmpty()) {
+			System.out.println("No matching property found");
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
 		List<Property> result = new ArrayList<>();
@@ -79,6 +82,7 @@ public class PropertysResource {
 		};
 	}
 
+	
 	@GET
 	@Path("/count")
 	@Produces("text/plain")
@@ -92,32 +96,25 @@ public class PropertysResource {
 	@PUT
 	@Path("{id}")
 	@Consumes("application/xml")
-	public void updateProperty(@PathParam("id") int id,  InputStream is) {
+	public void updateProperty(@PathParam("id") int id,  InputStream is) throws Exception {
 		Property update = readProperty(is);
 		Property property1 = propertyDB.get(id);
-		if (property1 == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
+		if (property1 == null){
+			System.out.println("No matching property found");
+			throw new WebApplicationException(Response.Status.NOT_FOUND);
+		}
 		property1.setType(update.getType());
 		property1.setDistrict(update.getDistrict());
 		property1.setPrice(update.getPrice());
 		property1.setStart(update.getStart().toString());
 		property1.setEnd(update.getEnd().toString());
-	}
-
-	@PUT
-	@Path("{id}/bid/{user}{value}")
-	@Consumes("application/xml")
-	public void bidProperty(@PathParam("id") int id,  @PathParam("user") String user, @PathParam("value") int val) {
-		Property prop = propertyDB.get(id);
-		if (prop == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
-		boolean bidResult = prop.makeBid(user, val);
-
-		if(!bidResult)
-		{
-			//get the current highest bid value, return it
+		boolean checkBid = property1.makeBid(update.getBid());
+		if(checkBid){
+			property1.setBid(update.getBid());
+			property1.setBidder(update.getBidder());
 		}
-		else
-		{
-			//return success
+		else{
+			throw new java.lang.Error("There is higher bid");
 		}
 	}
 
@@ -133,6 +130,8 @@ public class PropertysResource {
 			writer.println("      <price>" + prop.getPrice() + "</price>");
 			writer.println("      <startTime>" + prop.getStart().toString() + "</startTime>");
 			writer.println("      <endTime>" + prop.getEnd().toString() + "</endTime>");
+			writer.println("      <bidder>" + prop.getBidder() + "</bidder>");
+			writer.println("      <bid>" + prop.getBid() + "</bid>");
 			writer.println("   </property>");
 		}
 		writer.println("</property_list>");
@@ -147,6 +146,8 @@ public class PropertysResource {
 		writer.println("   <price>" + prop.getPrice() + "</price>");
 		writer.println("   <startTime>" + prop.getStart().toString() + "</startTime>");
 		writer.println("   <endTime>" + prop.getEnd().toString() + "</endTime>");
+		writer.println("   <bidder>" + prop.getBidder() + "</bidder>");
+		writer.println("   <bid>" + prop.getBid() + "</bid>");
 		writer.println("</property>");
 	}
 
@@ -179,6 +180,12 @@ public class PropertysResource {
 				}
 				else if (element.getTagName().equals("endTime")){
 					prop.setEnd(element.getTextContent());
+				}
+				else if (element.getTagName().equals("bid")){
+					prop.setBid(Integer.parseInt(element.getTextContent()));
+				}
+				else if (element.getTagName().equals("bidder")){
+					prop.setBidder(element.getTextContent());
 				}
 			}
 

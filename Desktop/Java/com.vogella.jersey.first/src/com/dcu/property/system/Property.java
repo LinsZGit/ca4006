@@ -14,7 +14,7 @@ public class Property {
 	private String endTime;
 	private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-	private String highestBidder = "";
+	private String highestBidder = "NULL";
 	private int highestBid = 0;
 
 	public int getId() {
@@ -74,7 +74,7 @@ public class Property {
 		this.price = price;
 	}
 
-	public boolean makeBid(String user, int value)
+	public boolean makeBid(int value)
 	{
 		if(value < highestBid)
 		{
@@ -82,15 +82,27 @@ public class Property {
 		}
 		else
 		{
-			highestBidder = user;
-			highestBid = value;
-
 			return true;
 		}
 	}
 
-	public int getHighBid()
+	public void setBid(int bid)
+	{
+		highestBid = bid;
+	}
+	
+	public int getBid()
 	{
 		return highestBid;
+	}
+	
+	public void setBidder(String bidder)
+	{
+		highestBidder = bidder;
+	}
+	
+	public String getBidder()
+	{
+		return highestBidder;
 	}
 }

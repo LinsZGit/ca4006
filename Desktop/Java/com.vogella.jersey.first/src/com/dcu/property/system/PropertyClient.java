@@ -17,7 +17,7 @@ public class PropertyClient {
 
 	public static void newProperty(Client client, Scanner scan)
 	{
-	  //no type checking as of yet
+	  //enter main info to create property
 
 	  System.out.println("Enter property type: ");
 	  String type = scan.nextLine();
@@ -41,10 +41,10 @@ public class PropertyClient {
 	  xml = xml + "<endTime>" + closing + "</endTime></property>";
 
 	  //System.out.println(xml); //debug only
-
+	  //post new property 
 	  Response response = client.target("http://localhost:8080/com.dcu.property.system/services/propertys").request().post(Entity.xml(xml));
 
-	  if (response.getStatus() != 201){
+	  if (response.getStatus() != 201){//run time error 
 		  System.out.println("new property did not creat successfully");
 		  throw new  RuntimeException("Failed to create");
 	  }
@@ -65,7 +65,7 @@ public class PropertyClient {
 	        String input = scan.nextLine();
 	        switch (input) {
 		        case "1" :
-		          System.out.println("Selected: [1]Please enter the ID");
+		          System.out.println("Selected: [1]Please enter the ID"); //find property by ID
 		          input = scan.nextLine();
 		          location = "http://localhost:8080/com.dcu.property.system/services/propertys/" + input;
 		          readURL = new URL(location);
@@ -76,7 +76,7 @@ public class PropertyClient {
 		          System.out.println();
 		          break;
 		        case "2" :
-		          System.out.println("Selected: [2]");
+		          System.out.println("Selected: [2]");//find property by price range
 		          System.out.println("Please enter min price of property");
 		          String min = scan.nextLine();
 		          System.out.println("Please enter max price of property");
@@ -101,7 +101,7 @@ public class PropertyClient {
 		} catch (MalformedURLException e) {
 			System.out.println("Malformed URL");
 		} catch (IOException e) {
-			System.out.println("Can not find matching property");
+			System.out.println("Can not find matching property");//if there is no property which can be found 
 		}
 	}
 
@@ -110,7 +110,7 @@ public class PropertyClient {
 		System.out.println("Please enter the ID of the property you want to bid on: ");
 		int bidId = Integer.parseInt(scan.nextLine());
 		System.out.println("Please enter the price you want to bid: ");
-		int price = scan.nextInt();
+		int price = Integer.parseInt(scan.nextLine());
 		
 		
 		String location = "http://localhost:8080/com.dcu.property.system/services/propertys/" + bidId;
@@ -125,7 +125,7 @@ public class PropertyClient {
         	
         in.close();
         int index = previous.indexOf("<bidder>");
-        
+        //generate new property string
         String updateBid = previous.substring(0,index)
         				 + "<bidder>" + username + "</bidder>"
         				 + "<bid>" + price + "</bid>"
@@ -156,9 +156,7 @@ public class PropertyClient {
 	    String username = scan.nextLine();
 	  	Client client = ClientBuilder.newClient();
 
-	  	//initialProperties(client);
-
-
+	  	//main menu 
 	    while((input.compareTo("exit")) != 0)
 	    {
 	    	System.out.println("\nPlease select an option from the following list: ");

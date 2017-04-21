@@ -36,7 +36,7 @@ public class PropertysResource {
 		System.out.println("Created property " +  property1.getId());
 		return Response.created(URI.create("/propertys/" +  property1.getId())).build();
 	}
-
+	//get by property ID
 	@GET
 	@Path("{id}")
 	@Produces("application/xml")
@@ -52,6 +52,8 @@ public class PropertysResource {
 			}
 		};
 	}
+	
+	//get by price range e.g http://localhost:8080/com.dcu.property.system/services/propertys/min=0&&max=400000
 	@GET
 	@Path("/min={min}&&max={max}")
 	@Produces("application/xml")
@@ -82,16 +84,6 @@ public class PropertysResource {
 		};
 	}
 
-	
-	@GET
-	@Path("/count")
-	@Produces("text/plain")
-	public int getProperty() {
-		if(propertyDB.isEmpty()){
-			return 0;
-		}
-		return propertyDB.size();
-	}
 
 	@PUT
 	@Path("{id}")
@@ -109,16 +101,16 @@ public class PropertysResource {
 		property1.setStart(update.getStart().toString());
 		property1.setEnd(update.getEnd().toString());
 		boolean checkBid = property1.makeBid(update.getBid());
-		if(checkBid){
+		if(!checkBid){
+			throw new WebApplicationException(Response.Status.NOT_ACCEPTABLE);
+		}
+		else{
 			property1.setBid(update.getBid());
 			property1.setBidder(update.getBidder());
 		}
-		else{
-			throw new java.lang.Error("There is higher bid");
-		}
 	}
 
-
+	//print property list
 	protected void outputPropertys(OutputStream os, List<Property> propertys) throws IOException {
 		PrintStream writer = new PrintStream(os);
 		writer.println("<property_list>");
@@ -136,7 +128,7 @@ public class PropertysResource {
 		}
 		writer.println("</property_list>");
 	}
-
+	//print single property
 	protected void outputProperty(OutputStream os, Property prop) throws IOException {
 		PrintStream writer = new PrintStream(os);
 		writer.println("<property id=\"" + prop.getId() + "\">");

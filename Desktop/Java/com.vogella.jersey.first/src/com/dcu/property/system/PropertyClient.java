@@ -48,9 +48,9 @@ public class PropertyClient {
 		  System.out.println("new property did not creat successfully");
 		  throw new  RuntimeException("Failed to create");
 	  }
-	  String location = response.getLocation().toString();
+	  //String location = response.getLocation().toString();
 
-	  System.out.println("Location: " + location); /*as URI*/
+	  //System.out.println("Location: " + location); /*as URI*/
 	  response.close();
 	}
 
@@ -108,43 +108,46 @@ public class PropertyClient {
 		}
 	}
 
-	public static void bidProperty(Client client, Scanner scan, String username){
-		try{
-			System.out.println("Please enter the ID of the property you want to bid on: ");
-			int bidId = scan.nextInt();
-			System.out.println("Please enter the price you want to bid: ");
-			int price = scan.nextInt();
-			
-			
-			String location = "http://localhost:8080/com.dcu.property.system/services/propertys/" + bidId;
-			URL readURL = new URL(location);
-	        BufferedReader in = new BufferedReader(new InputStreamReader(readURL.openStream()));
-	        String inputLine = "";
-	        String previous = "";
+	public static void bidProperty(Client client, Scanner scan, String username) throws IOException{
 
-	        while ((inputLine = in.readLine()) != null){
-	            previous = previous + inputLine.trim();
-	        }
-	        	
-	        in.close();
-	        int index = previous.indexOf("<bidder>");
-	        
-	        String updateBid = previous.substring(0,index)
-	        				 + "<bidder>" + username + "</bidder>"
-	        				 + "<bid>" + price + "</bid>"
-	        				 +"</property>";
-	        Response response = client.target(location).request().put(Entity.xml(updateBid));        
-	        response.close(); 
-	        //System.out.print("Congratulation! You have the highest bid\n");
-		}
-		catch(IOException io){
-			System.out.println("Property ID is invalid.");
-		}
-		catch(Error e){
-			System.out.print("Sorry there is higher bid");
-		}
+		System.out.println("Please enter the ID of the property you want to bid on: ");
+		int bidId = scan.nextInt();
+		System.out.println("Please enter the price you want to bid: ");
+		int price = scan.nextInt();
+		
+		
+		String location = "http://localhost:8080/com.dcu.property.system/services/propertys/" + bidId;
+		URL readURL = new URL(location);
+        BufferedReader in = new BufferedReader(new InputStreamReader(readURL.openStream()));
+        String inputLine = "";
+        String previous = "";
+
+        while ((inputLine = in.readLine()) != null){
+            previous = previous + inputLine.trim();
+        }
+        	
+        in.close();
+        int index = previous.indexOf("<bidder>");
+        
+        String updateBid = previous.substring(0,index)
+        				 + "<bidder>" + username + "</bidder>"
+        				 + "<bid>" + price + "</bid>"
+        				 +"</property>";
+        Response response = client.target(location).request().put(Entity.xml(updateBid));        
+        response.close(); 
+
+        if (response.getStatus() == 406){
+  		  	System.out.println("Sorry, you need to provide higher bid priceff\n");
+        }
+        else if(response.getStatus() == 201){
+        	System.out.print("There is no matching property\n");
+        }
+  	    else{
+  	    	System.out.print("Congratulation! You have the highest bid\n");
+  	    }
 
 	}
+	
 	public static void main (String[] args) throws Exception{
 
 	    Scanner scan = new Scanner(System.in);
@@ -158,7 +161,7 @@ public class PropertyClient {
 
 	    while((input.compareTo("exit")) != 0)
 	    {
-	    	System.out.println("Please select an option from the following list: ");
+	    	System.out.println("\nPlease select an option from the following list: ");
 	        System.out.println("[1]Create New Property");
 	        System.out.println("[2]List Available Properties");
 	        System.out.println("[3]Bid On A Property");

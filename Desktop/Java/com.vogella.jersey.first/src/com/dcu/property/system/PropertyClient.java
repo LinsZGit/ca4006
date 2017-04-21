@@ -48,9 +48,6 @@ public class PropertyClient {
 		  System.out.println("new property did not creat successfully");
 		  throw new  RuntimeException("Failed to create");
 	  }
-	  //String location = response.getLocation().toString();
-
-	  //System.out.println("Location: " + location); /*as URI*/
 	  response.close();
 	}
 
@@ -111,7 +108,7 @@ public class PropertyClient {
 	public static void bidProperty(Client client, Scanner scan, String username) throws IOException{
 
 		System.out.println("Please enter the ID of the property you want to bid on: ");
-		int bidId = scan.nextInt();
+		int bidId = Integer.parseInt(scan.nextLine());
 		System.out.println("Please enter the price you want to bid: ");
 		int price = scan.nextInt();
 		
@@ -134,18 +131,21 @@ public class PropertyClient {
         				 + "<bid>" + price + "</bid>"
         				 +"</property>";
         Response response = client.target(location).request().put(Entity.xml(updateBid));        
-        response.close(); 
-
+         
+        //error code
         if (response.getStatus() == 406){
-  		  	System.out.println("Sorry, you need to provide higher bid priceff\n");
+  		  	System.out.println("Sorry, you need to provide higher bid price\n");
         }
-        else if(response.getStatus() == 201){
+        else if(response.getStatus() == 201){//run time error 
         	System.out.print("There is no matching property\n");
         }
-  	    else{
+  	    else if(response.getStatus() == 204){//succeed 
   	    	System.out.print("Congratulation! You have the highest bid\n");
   	    }
-
+  	    else{
+  	    	System.out.print("Exception error\n");
+  	    }
+        response.close();
 	}
 	
 	public static void main (String[] args) throws Exception{

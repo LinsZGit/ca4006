@@ -14,7 +14,62 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
 public class PropertyClient {
+	  public static void initialProperties(Client client)
+	  {
+	    String[] xml = new String[5];
+	    xml[0]= "<property>"
+	        + "<type>H1</type>"
+	        + "<district>3</district>"
+	        + "<bedroom>2</bedroom>"
+	        + "<price>375000</price>"
+	        + "<startTime>2017-01-15</startTime>"
+	        + "<endTime>2017-01-30</endTime>"
+	        + "</property>";
+	    xml[1] = "<property>"
+	        + "<type>H2</type>"
+	        + "<district>5</district>"
+	        + "<bedroom>3</bedroom>"
+	        + "<price>360000</price>"
+	        + "<startTime>2017-03-15</startTime>"
+	        + "<endTime>2017-09-30</endTime>"
+	        + "</property>";
+	    xml[2] = "<property>"
+	        + "<type>H3</type>"
+	        + "<district>3</district>"
+	        + "<bedroom>3</bedroom>"
+	        + "<price>500000</price>"
+	        + "<startTime>2017-01-15</startTime>"
+	        + "<endTime>2017-08-30</endTime>"
+	        + "</property>";
+	    xml[3] = "<property>"
+	        + "<type>A1</type>"
+	        + "<district>5</district>"
+	        + "<bedroom>2</bedroom>"
+	        + "<price>250000</price>"
+	        + "<startTime>2017-04-30</startTime>"
+	        + "<endTime>2017-06-30</endTime>"
+	        + "</property>";
+	    xml[4] = "<property>"
+	        + "<type>A2</type>"
+	        + "<district>7</district>"
+	        + "<bedroom>1</bedroom>"
+	        + "<price>150000</price>"
+	        + "<startTime>2017-02-15</startTime>"
+	        + "<endTime>2018-04-30</endTime>"
+	        + "</property>";
+	    
+	    for(String s: xml){
+	    	Response response = client.target("http://localhost:8080/com.dcu.property.system/services/propertys").request().post(Entity.xml(s));
+	    	if (response.getStatus() != 201){//run time error 
+	  		  System.out.println("new property did not creat successfully");
+	  		  throw new  RuntimeException("Failed to create");
+	  	  }
+	  	  response.close();
+	    }
 
+	    
+	}
+	    
 	public static void newProperty(Client client, Scanner scan)
 	{
 	  //enter main info to create property
@@ -155,7 +210,7 @@ public class PropertyClient {
 	    System.out.print("Please input a username: ");
 	    String username = scan.nextLine();
 	  	Client client = ClientBuilder.newClient();
-
+	  	initialProperties(client);
 	  	//main menu 
 	    while((input.compareTo("exit")) != 0)
 	    {

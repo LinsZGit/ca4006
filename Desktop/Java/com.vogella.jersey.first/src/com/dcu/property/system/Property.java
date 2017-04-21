@@ -72,11 +72,7 @@ public class Property {
 
 	public void setPrice(String price) {
 		this.price = price;
-		if(highestBid < Integer.parseInt(price))
-		{
-			highestBidder = "NULL";
-			highestBid = Integer.parseInt(price);
-		}
+		this.highestBid = Integer.parseInt(price);
 	}
 
 	public boolean makeBid(int value)
